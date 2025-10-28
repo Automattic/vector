@@ -59,14 +59,14 @@ section = "admin"
 maintainer-scripts = "distribution/debian/scripts/"
 conf-files = ["/etc/vector/vector.yaml", "/etc/default/vector"]
 assets = [
-  ["target/release/vector", "/usr/bin/", "755"],
-  ["config/vector.yaml", "/etc/vector/vector.yaml", "644"],
-  ["config/examples/*", "/etc/vector/examples/", "644"],
-  ["distribution/systemd/vector.service", "/lib/systemd/system/vector.service", "644"],
-  ["distribution/systemd/vector.default", "/etc/default/vector", "600"],
-  ["licenses/*", "/usr/share/vector/licenses/", "644"],
-  ["NOTICE", "/usr/share/vector/NOTICE", "644"],
-  ["LICENSE-3rdparty.csv", "/usr/share/vector/LICENSE-3rdparty.csv", "644"],
+["target/release/vector", "/usr/bin/", "755"],
+["config/vector.yaml", "/etc/vector/vector.yaml", "644"],
+["config/examples/*", "/etc/vector/examples/", "644"],
+["distribution/systemd/vector.service", "/lib/systemd/system/vector.service", "644"],
+["distribution/systemd/vector.default", "/etc/default/vector", "600"],
+["licenses/*", "/usr/share/vector/licenses/", "644"],
+["NOTICE", "/usr/share/vector/NOTICE", "644"],
+["LICENSE-3rdparty.csv", "/usr/share/vector/LICENSE-3rdparty.csv", "644"],
 ]
 license-file = ["target/debian-license.txt"]
 extended-description-file = "target/debian-extended-description.txt"
@@ -100,39 +100,39 @@ depends = ""
 
 [workspace]
 members = [
-  ".",
-  "lib/codecs",
-  "lib/dnsmsg-parser",
-  "lib/dnstap-parser",
-  "lib/docs-renderer",
-  "lib/enrichment",
-  "lib/fakedata",
-  "lib/file-source",
-  "lib/file-source-common",
-  "lib/k8s-e2e-tests",
-  "lib/k8s-test-framework",
-  "lib/loki-logproto",
-  "lib/portpicker",
-  "lib/prometheus-parser",
-  "lib/opentelemetry-proto",
-  "lib/tracing-limit",
-  "lib/vector-api-client",
-  "lib/vector-buffers",
-  "lib/vector-common",
-  "lib/vector-config",
-  "lib/vector-config-common",
-  "lib/vector-config-macros",
-  "lib/vector-core",
-  "lib/vector-lib",
-  "lib/vector-lookup",
-  "lib/vector-stream",
-  "lib/vector-tap",
-  "lib/vector-top",
-  "lib/vector-vrl/cli",
-  "lib/vector-vrl/functions",
-  "lib/vector-vrl/tests",
-  "lib/vector-vrl/web-playground",
-  "vdev",
+".",
+"lib/codecs",
+"lib/dnsmsg-parser",
+"lib/dnstap-parser",
+"lib/docs-renderer",
+"lib/enrichment",
+"lib/fakedata",
+"lib/file-source",
+"lib/file-source-common",
+"lib/k8s-e2e-tests",
+"lib/k8s-test-framework",
+"lib/loki-logproto",
+"lib/portpicker",
+"lib/prometheus-parser",
+"lib/opentelemetry-proto",
+"lib/tracing-limit",
+"lib/vector-api-client",
+"lib/vector-buffers",
+"lib/vector-common",
+"lib/vector-config",
+"lib/vector-config-common",
+"lib/vector-config-macros",
+"lib/vector-core",
+"lib/vector-lib",
+"lib/vector-lookup",
+"lib/vector-stream",
+"lib/vector-tap",
+"lib/vector-top",
+"lib/vector-vrl/cli",
+"lib/vector-vrl/functions",
+"lib/vector-vrl/tests",
+"lib/vector-vrl/web-playground",
+"vdev",
 ]
 
 [workspace.dependencies]
@@ -280,11 +280,11 @@ aws-smithy-runtime-api = { version = "1.7.3", default-features = false, optional
 aws-smithy-types = { version = "1.2.11", default-features = false, features = ["rt-tokio"], optional = true }
 
 # Azure
-azure_core = { version = "0.29.1", default-features = false, features = ["reqwest"], optional = true }
+azure_core = { git = "https://github.com/Automattic/azure-sdk-for-rust.git", branch = "feature/add_sas_for_blob", package = "azure_core", default-features = false, features = ["reqwest"], optional = true }
 azure_identity = { version = "0.29.0", default-features = false, optional = true }
 
 # Azure Storage (official)
-azure_storage_blob = { version = "0.6.0", default-features = false, optional = true }
+azure_storage_blob = { git = "https://github.com/Automattic/azure-sdk-for-rust.git", branch = "feature/add_sas_for_blob", package = "azure_storage_blob", default-features = false, optional = true }
 reqwest.workspace = true
 reqwest_0_12 = { package = "reqwest", version = "0.12.24", default-features = false, features = ["json", "gzip", "deflate", "rustls-tls-native-roots"] }
 
@@ -452,9 +452,9 @@ openssl-src = { version = "300", default-features = false, features = ["force-en
 approx = "0.5.1"
 assert_cmd = { version = "2.0.17", default-features = false }
 aws-smithy-runtime = { version = "1.8.3", default-features = false, features = ["tls-rustls"] }
-azure_core = { version = "0.29.1", default-features = false, features = ["reqwest"] }
+azure_core = { git = "https://github.com/Automattic/azure-sdk-for-rust.git", branch = "feature/add_sas_for_blob", package = "azure_core", default-features = false, features = ["reqwest"] }
 azure_identity = { version = "0.29.0", default-features = false }
-azure_storage_blob = { version = "0.6.0", default-features = false }
+azure_storage_blob = { git = "https://github.com/Automattic/azure-sdk-for-rust.git", branch = "feature/add_sas_for_blob", package = "azure_storage_blob", default-features = false }
 base64 = "0.22.1"
 criterion = { version = "0.7.0", features = ["html_reports", "async_tokio"] }
 itertools.workspace = true
@@ -528,37 +528,37 @@ docker = ["dep:bollard", "dep:dirs-next"]
 
 # API
 api = [
-  "dep:async-graphql",
-  "dep:async-graphql-warp",
-  "dep:base64",
-  "vector-lib/api",
+"dep:async-graphql",
+"dep:async-graphql-warp",
+"dep:base64",
+"vector-lib/api",
 ]
 
 # API client
 api-client = [
-  "api-client-minimal",
-  "top",
+"api-client-minimal",
+"top",
 ]
 
 api-client-minimal = [
-  "vector-lib/api",
-  "vector-lib/api-client",
+"vector-lib/api",
+"vector-lib/api-client",
 ]
 
 top = ["vector-lib/vector-top", "vector-lib/api-client"]
 
 aws-core = [
-  "aws-runtime",
-  "aws-config",
-  "dep:aws-credential-types",
-  "dep:aws-sigv4",
-  "dep:aws-types",
-  "dep:aws-smithy-async",
-  "dep:aws-smithy-http",
-  "dep:aws-smithy-types",
-  "dep:aws-smithy-runtime",
-  "dep:aws-smithy-runtime-api",
-  "dep:aws-sdk-sts",
+"aws-runtime",
+"aws-config",
+"dep:aws-credential-types",
+"dep:aws-sigv4",
+"dep:aws-types",
+"dep:aws-smithy-async",
+"dep:aws-smithy-http",
+"dep:aws-smithy-types",
+"dep:aws-smithy-runtime",
+"dep:aws-smithy-runtime-api",
+"dep:aws-sdk-sts",
 ]
 
 # Anything that requires Protocol Buffers.
@@ -584,54 +584,54 @@ secrets-aws-secrets-manager = ["aws-core", "dep:aws-sdk-secretsmanager"]
 # Sources
 sources = ["sources-logs", "sources-metrics"]
 sources-logs = [
-  "sources-amqp",
-  "sources-aws_kinesis_firehose",
-  "sources-aws_s3",
-  "sources-aws_sqs",
-  "sources-datadog_agent",
-  "sources-demo_logs",
-  "sources-docker_logs",
-  "sources-exec",
-  "sources-file",
-  "sources-fluent",
-  "sources-gcp_pubsub",
-  "sources-heroku_logs",
-  "sources-http_server",
-  "sources-http_client",
-  "sources-internal_logs",
-  "sources-journald",
-  "sources-kafka",
-  "sources-kubernetes_logs",
-  "sources-logstash",
-  "sources-mqtt",
-  "sources-nats",
-  "sources-okta",
-  "sources-opentelemetry",
-  "sources-pulsar",
-  "sources-file_descriptor",
-  "sources-redis",
-  "sources-socket",
-  "sources-splunk_hec",
-  "sources-stdin",
-  "sources-syslog",
-  "sources-vector",
-  "sources-websocket",
+"sources-amqp",
+"sources-aws_kinesis_firehose",
+"sources-aws_s3",
+"sources-aws_sqs",
+"sources-datadog_agent",
+"sources-demo_logs",
+"sources-docker_logs",
+"sources-exec",
+"sources-file",
+"sources-fluent",
+"sources-gcp_pubsub",
+"sources-heroku_logs",
+"sources-http_server",
+"sources-http_client",
+"sources-internal_logs",
+"sources-journald",
+"sources-kafka",
+"sources-kubernetes_logs",
+"sources-logstash",
+"sources-mqtt",
+"sources-nats",
+"sources-okta",
+"sources-opentelemetry",
+"sources-pulsar",
+"sources-file_descriptor",
+"sources-redis",
+"sources-socket",
+"sources-splunk_hec",
+"sources-stdin",
+"sources-syslog",
+"sources-vector",
+"sources-websocket",
 ]
 sources-metrics = [
-  "dep:prost",
-  "sources-apache_metrics",
-  "sources-aws_ecs_metrics",
-  "sources-eventstoredb_metrics",
-  "sources-host_metrics",
-  "sources-internal_metrics",
-  "sources-mongodb_metrics",
-  "sources-nginx_metrics",
-  "sources-postgresql_metrics",
-  "sources-prometheus",
-  "sources-static_metrics",
-  "sources-statsd",
-  "sources-vector",
-  "sources-websocket",
+"dep:prost",
+"sources-apache_metrics",
+"sources-aws_ecs_metrics",
+"sources-eventstoredb_metrics",
+"sources-host_metrics",
+"sources-internal_metrics",
+"sources-mongodb_metrics",
+"sources-nginx_metrics",
+"sources-postgresql_metrics",
+"sources-prometheus",
+"sources-static_metrics",
+"sources-statsd",
+"sources-vector",
+"sources-websocket",
 ]
 
 sources-amqp = ["lapin"]
@@ -667,15 +667,15 @@ sources-nats = ["dep:async-nats", "dep:nkeys"]
 sources-nginx_metrics = ["dep:nom"]
 sources-okta = ["sources-utils-http-client"]
 sources-opentelemetry = [
-  "dep:hex",
-  "codecs-opentelemetry",
-  "vector-lib/opentelemetry",
-  "dep:prost",
-  "dep:prost-types",
-  "sources-http_server",
-  "sources-utils-http",
-  "sources-utils-http-headers",
-  "sources-vector",
+"dep:hex",
+"codecs-opentelemetry",
+"vector-lib/opentelemetry",
+"dep:prost",
+"dep:prost-types",
+"sources-http_server",
+"sources-utils-http",
+"sources-utils-http-headers",
+"sources-vector",
 ]
 sources-postgresql_metrics = ["dep:postgres-openssl", "dep:tokio-postgres"]
 sources-prometheus = ["sources-prometheus-scrape", "sources-prometheus-remote-write", "sources-prometheus-pushgateway"]
@@ -708,30 +708,30 @@ sources-vector = ["dep:prost", "dep:tonic", "protobuf-build"]
 # Transforms
 transforms = ["transforms-logs", "transforms-metrics"]
 transforms-logs = [
-  "transforms-aws_ec2_metadata",
-  "transforms-dedupe",
-  "transforms-filter",
-  "transforms-window",
-  "transforms-log_to_metric",
-  "transforms-lua",
-  "transforms-metric_to_log",
-  "transforms-reduce",
-  "transforms-remap",
-  "transforms-route",
-  "transforms-exclusive-route",
-  "transforms-sample",
-  "transforms-throttle",
+"transforms-aws_ec2_metadata",
+"transforms-dedupe",
+"transforms-filter",
+"transforms-window",
+"transforms-log_to_metric",
+"transforms-lua",
+"transforms-metric_to_log",
+"transforms-reduce",
+"transforms-remap",
+"transforms-route",
+"transforms-exclusive-route",
+"transforms-sample",
+"transforms-throttle",
 ]
 transforms-metrics = [
-  "transforms-aggregate",
-  "transforms-filter",
-  "transforms-incremental_to_absolute",
-  "transforms-log_to_metric",
-  "transforms-lua",
-  "transforms-metric_to_log",
-  "transforms-remap",
-  "transforms-tag_cardinality_limit",
-  "transforms-throttle",
+"transforms-aggregate",
+"transforms-filter",
+"transforms-incremental_to_absolute",
+"transforms-log_to_metric",
+"transforms-lua",
+"transforms-metric_to_log",
+"transforms-remap",
+"transforms-tag_cardinality_limit",
+"transforms-throttle",
 ]
 
 transforms-aggregate = []
@@ -759,69 +759,69 @@ transforms-impl-reduce = []
 # Sinks
 sinks = ["sinks-logs", "sinks-metrics"]
 sinks-logs = [
-  "sinks-amqp",
-  "sinks-appsignal",
-  "sinks-aws_cloudwatch_logs",
-  "sinks-aws_kinesis_firehose",
-  "sinks-aws_kinesis_streams",
-  "sinks-aws_s3",
-  "sinks-aws_sns",
-  "sinks-aws_sqs",
-  "sinks-axiom",
-  "sinks-azure_blob",
-  "sinks-azure_monitor_logs",
-  "sinks-blackhole",
-  "sinks-chronicle",
-  "sinks-clickhouse",
-  "sinks-console",
-  "sinks-databend",
-  "sinks-datadog_events",
-  "sinks-datadog_logs",
-  "sinks-datadog_traces",
-  "sinks-elasticsearch",
-  "sinks-file",
-  "sinks-gcp",
-  "sinks-greptimedb_logs",
-  "sinks-honeycomb",
-  "sinks-http",
-  "sinks-humio",
-  "sinks-influxdb",
-  "sinks-kafka",
-  "sinks-keep",
-  "sinks-loki",
-  "sinks-mezmo",
-  "sinks-mqtt",
-  "sinks-nats",
-  "sinks-new_relic",
-  "sinks-new_relic_logs",
-  "sinks-opentelemetry",
-  "sinks-papertrail",
-  "sinks-postgres",
-  "sinks-pulsar",
-  "sinks-redis",
-  "sinks-sematext",
-  "sinks-socket",
-  "sinks-splunk_hec",
-  "sinks-vector",
-  "sinks-webhdfs",
-  "sinks-websocket",
-  "sinks-websocket-server",
+"sinks-amqp",
+"sinks-appsignal",
+"sinks-aws_cloudwatch_logs",
+"sinks-aws_kinesis_firehose",
+"sinks-aws_kinesis_streams",
+"sinks-aws_s3",
+"sinks-aws_sns",
+"sinks-aws_sqs",
+"sinks-axiom",
+"sinks-azure_blob",
+"sinks-azure_monitor_logs",
+"sinks-blackhole",
+"sinks-chronicle",
+"sinks-clickhouse",
+"sinks-console",
+"sinks-databend",
+"sinks-datadog_events",
+"sinks-datadog_logs",
+"sinks-datadog_traces",
+"sinks-elasticsearch",
+"sinks-file",
+"sinks-gcp",
+"sinks-greptimedb_logs",
+"sinks-honeycomb",
+"sinks-http",
+"sinks-humio",
+"sinks-influxdb",
+"sinks-kafka",
+"sinks-keep",
+"sinks-loki",
+"sinks-mezmo",
+"sinks-mqtt",
+"sinks-nats",
+"sinks-new_relic",
+"sinks-new_relic_logs",
+"sinks-opentelemetry",
+"sinks-papertrail",
+"sinks-postgres",
+"sinks-pulsar",
+"sinks-redis",
+"sinks-sematext",
+"sinks-socket",
+"sinks-splunk_hec",
+"sinks-vector",
+"sinks-webhdfs",
+"sinks-websocket",
+"sinks-websocket-server",
 ]
 sinks-metrics = [
-  "sinks-appsignal",
-  "sinks-aws_cloudwatch_metrics",
-  "sinks-blackhole",
-  "sinks-console",
-  "sinks-datadog_metrics",
-  "sinks-greptimedb_metrics",
-  "sinks-humio",
-  "sinks-influxdb",
-  "sinks-kafka",
-  "sinks-prometheus",
-  "sinks-sematext",
-  "sinks-statsd",
-  "sinks-vector",
-  "sinks-splunk_hec"
+"sinks-appsignal",
+"sinks-aws_cloudwatch_metrics",
+"sinks-blackhole",
+"sinks-console",
+"sinks-datadog_metrics",
+"sinks-greptimedb_metrics",
+"sinks-humio",
+"sinks-influxdb",
+"sinks-kafka",
+"sinks-prometheus",
+"sinks-sematext",
+"sinks-statsd",
+"sinks-vector",
+"sinks-splunk_hec"
 ]
 
 sinks-amqp = ["deadpool", "lapin"]
@@ -834,7 +834,7 @@ sinks-aws_s3 = ["dep:base64", "dep:md-5", "aws-core", "dep:aws-sdk-s3"]
 sinks-aws_sqs = ["aws-core", "dep:aws-sdk-sqs"]
 sinks-aws_sns = ["aws-core", "dep:aws-sdk-sns"]
 sinks-axiom = ["sinks-http"]
-sinks-azure_blob = ["dep:azure_core", "dep:azure_identity", "dep:azure_storage_blob"]
+sinks-azure_blob = ["dep:azure_core", "dep:azure_storage_blob"]
 sinks-azure_monitor_logs = []
 sinks-blackhole = []
 sinks-chronicle = []
@@ -884,63 +884,63 @@ nightly = []
 
 # Integration testing-related features
 all-integration-tests = [
-  "amqp-integration-tests",
-  "appsignal-integration-tests",
-  "aws-integration-tests",
-  "axiom-integration-tests",
-  "azure-integration-tests",
-  "chronicle-integration-tests",
-  "clickhouse-integration-tests",
-  "databend-integration-tests",
-  "datadog-agent-integration-tests",
-  "datadog-logs-integration-tests",
-  "datadog-metrics-integration-tests",
-  "datadog-traces-integration-tests",
-  "dnstap-integration-tests",
-  "docker-logs-integration-tests",
-  "es-integration-tests",
-  "eventstoredb_metrics-integration-tests",
-  "fluent-integration-tests",
-  "gcp-cloud-storage-integration-tests",
-  "gcp-integration-tests",
-  "gcp-pubsub-integration-tests",
-  "greptimedb-integration-tests",
-  "http-client-integration-tests",
-  "humio-integration-tests",
-  "influxdb-integration-tests",
-  "kafka-integration-tests",
-  "logstash-integration-tests",
-  "loki-integration-tests",
-  "mongodb_metrics-integration-tests",
-  "nats-integration-tests",
-  "nginx-integration-tests",
-  "opentelemetry-integration-tests",
-  "postgresql_metrics-integration-tests",
-  "postgres_sink-integration-tests",
-  "prometheus-integration-tests",
-  "pulsar-integration-tests",
-  "redis-integration-tests",
-  "splunk-integration-tests",
-  "webhdfs-integration-tests",
+"amqp-integration-tests",
+"appsignal-integration-tests",
+"aws-integration-tests",
+"axiom-integration-tests",
+"azure-integration-tests",
+"chronicle-integration-tests",
+"clickhouse-integration-tests",
+"databend-integration-tests",
+"datadog-agent-integration-tests",
+"datadog-logs-integration-tests",
+"datadog-metrics-integration-tests",
+"datadog-traces-integration-tests",
+"dnstap-integration-tests",
+"docker-logs-integration-tests",
+"es-integration-tests",
+"eventstoredb_metrics-integration-tests",
+"fluent-integration-tests",
+"gcp-cloud-storage-integration-tests",
+"gcp-integration-tests",
+"gcp-pubsub-integration-tests",
+"greptimedb-integration-tests",
+"http-client-integration-tests",
+"humio-integration-tests",
+"influxdb-integration-tests",
+"kafka-integration-tests",
+"logstash-integration-tests",
+"loki-integration-tests",
+"mongodb_metrics-integration-tests",
+"nats-integration-tests",
+"nginx-integration-tests",
+"opentelemetry-integration-tests",
+"postgresql_metrics-integration-tests",
+"postgres_sink-integration-tests",
+"prometheus-integration-tests",
+"pulsar-integration-tests",
+"redis-integration-tests",
+"splunk-integration-tests",
+"webhdfs-integration-tests",
 ]
 
 amqp-integration-tests = ["sources-amqp", "sinks-amqp"]
 appsignal-integration-tests = ["sinks-appsignal"]
 
 aws-integration-tests = [
-  "aws-cloudwatch-logs-integration-tests",
-  "aws-cloudwatch-metrics-integration-tests",
-  "aws-ec2-metadata-integration-tests",
-  "aws-ecs-metrics-integration-tests",
-  "aws-kinesis-firehose-integration-tests",
-  "aws-kinesis-streams-integration-tests",
-  "aws-s3-integration-tests",
-  "aws-sqs-integration-tests",
-  "aws-sns-integration-tests",
+"aws-cloudwatch-logs-integration-tests",
+"aws-cloudwatch-metrics-integration-tests",
+"aws-ec2-metadata-integration-tests",
+"aws-ecs-metrics-integration-tests",
+"aws-kinesis-firehose-integration-tests",
+"aws-kinesis-streams-integration-tests",
+"aws-s3-integration-tests",
+"aws-sqs-integration-tests",
+"aws-sns-integration-tests",
 ]
 
 azure-integration-tests = [
-  "azure-blob-integration-tests"
+"azure-blob-integration-tests"
 ]
 
 aws-cloudwatch-logs-integration-tests = ["sinks-aws_cloudwatch_logs"]
@@ -995,68 +995,68 @@ test-utils = []
 
 # End-to-End testing-related features
 all-e2e-tests = [
-  "e2e-tests-datadog",
-  "e2e-tests-opentelemetry"
+"e2e-tests-datadog",
+"e2e-tests-opentelemetry"
 ]
 
 e2e-tests-datadog = [
-  "sources-datadog_agent",
-  "sinks-datadog_logs",
-  "sinks-datadog_metrics",
-  "dep:async-compression"
+"sources-datadog_agent",
+"sinks-datadog_logs",
+"sinks-datadog_metrics",
+"dep:async-compression"
 ]
 
 e2e-tests-opentelemetry = [
-  "sources-opentelemetry",
-  "sinks-opentelemetry",
-  "sources-internal_metrics",
-  "transforms-remap",
-  "sinks-console",
-  "sinks-file",
-  "codecs-opentelemetry",
-  "dep:prost-reflect"
+"sources-opentelemetry",
+"sinks-opentelemetry",
+"sources-internal_metrics",
+"transforms-remap",
+"sinks-console",
+"sinks-file",
+"codecs-opentelemetry",
+"dep:prost-reflect"
 ]
 
 vector-api-tests = [
-  "sources-demo_logs",
-  "transforms-log_to_metric",
-  "transforms-remap",
-  "sinks-blackhole"
+"sources-demo_logs",
+"transforms-log_to_metric",
+"transforms-remap",
+"sinks-blackhole"
 ]
 vector-unit-test-tests = [
-  "sources-demo_logs",
-  "transforms-remap",
-  "transforms-route",
-  "transforms-filter",
-  "transforms-reduce",
-  "sinks-console"
+"sources-demo_logs",
+"transforms-remap",
+"transforms-route",
+"transforms-filter",
+"transforms-reduce",
+"sinks-console"
 ]
 
 component-validation-runner = ["dep:tonic", "sources-internal_logs", "sources-internal_metrics", "sources-vector", "sinks-vector"]
 # For now, only include components that implement ValidatableComponent.
 # In the future, this can change to simply reference the targets `sources`, `transforms`, `sinks`
 component-validation-tests = [
-  "component-validation-runner",
-  "sources-http_client",
-  "sources-http_server",
-  "sinks-http",
-  "sinks-splunk_hec",
-  "sources-splunk_hec",
-  "sinks-datadog_logs",
-  "sources-datadog_agent",
+"component-validation-runner",
+"sources-http_client",
+"sources-http_server",
+"sinks-http",
+"sinks-splunk_hec",
+"sources-splunk_hec",
+"sinks-datadog_logs",
+"sources-datadog_agent",
 ]
 
 # Grouping together features for benchmarks. We exclude the API client due to it causing the build process to run out
 # of memory when those additional dependencies are built in CI.
 benches = [
-  "sinks-file",
-  "sinks-http",
-  "sinks-socket",
-  "sources-file",
-  "sources-socket",
-  "sources-syslog",
-  "transforms-lua",
-  "transforms-sample",
+"sinks-file",
+"sinks-http",
+"sinks-socket",
+"sources-file",
+"sources-socket",
+"sources-syslog",
+"transforms-lua",
+"transforms-sample",
 ]
 dnstap-benches = ["sources-dnstap"]
 language-benches = ["sinks-socket", "sources-socket", "transforms-lua", "transforms-remap"]

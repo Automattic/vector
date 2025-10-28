@@ -204,13 +204,10 @@ pub fn build_client(
             format!("{}?{}", blob_endpoint.trim_end_matches('/'), sas)
         };
 
-        #[allow(deprecated)]
-        let credential = azure_identity::DeveloperToolsCredential::new(None)
-            .map_err(|e| format!("Failed to construct credential for SAS auth: {e}"))?;
-        let client = azure_storage_blob::BlobContainerClient::new(
+        // Using SAS-based auth; no TokenCredential required for SAS/AccountKey flows.
+        let client = azure_storage_blob::BlobContainerClient::new_sas(
             &endpoint,
             container_name,
-            credential,
             Some(options),
         )
         .map_err(|e| format!("Failed to create Azure Blob container client: {e}"))?;
@@ -225,13 +222,10 @@ pub fn build_client(
     // Initial SAS + client
     let (initial_sas, ttl) = generate_account_sas(&account_name, &account_key)?;
     let current_endpoint = format!("{}?{}", base_endpoint.trim_end_matches('/'), initial_sas);
-    #[allow(deprecated)]
-    let credential = azure_identity::DeveloperToolsCredential::new(None)
-        .map_err(|e| format!("Failed to construct credential for SAS auth: {e}"))?;
-    let initial = azure_storage_blob::BlobContainerClient::new(
+    // Using SAS-based auth; no TokenCredential required for SAS/AccountKey flows.
+    let initial = azure_storage_blob::BlobContainerClient::new_sas(
         &current_endpoint,
         container_name.clone(),
-        credential.clone(),
         Some(options.clone()),
     )
     .map_err(|e| format!("Failed to create Azure Blob container client: {e}"))?;
@@ -260,10 +254,9 @@ pub fn build_client(
                             format!("{}?{}", base_endpoint.trim_end_matches('/'), sas);
                         // Rebuild client with the rotated SAS
                         // Note: we reuse the same credential placeholder and options (transport includes proxy)
-                        let rotated = azure_storage_blob::BlobContainerClient::new(
+                        let rotated = azure_storage_blob::BlobContainerClient::new_sas(
                             &new_endpoint,
                             container_name.clone(),
-                            credential.clone(),
                             Some(options.clone()),
                         );
                         if let Ok(rotated_client) = rotated {
