@@ -36,6 +36,7 @@ async fn azure_blob_healthcheck_passed() {
     let client = azure_common::config::build_client(
         config.connection_string.clone().into(),
         config.container_name.clone(),
+        &crate::config::ProxyConfig::default(),
     )
     .expect("Failed to create client");
 
@@ -55,6 +56,7 @@ async fn azure_blob_healthcheck_unknown_container() {
     let client = azure_common::config::build_client(
         config.connection_string.clone().into(),
         config.container_name.clone(),
+        &crate::config::ProxyConfig::default(),
     )
     .expect("Failed to create client");
 
@@ -240,6 +242,7 @@ impl AzureBlobSinkConfig {
         let client = azure_common::config::build_client(
             self.connection_string.clone().into(),
             self.container_name.clone(),
+            &crate::config::ProxyConfig::default(),
         )
         .expect("Failed to create client");
 
@@ -257,6 +260,7 @@ impl AzureBlobSinkConfig {
         let client = azure_common::config::build_client(
             self.connection_string.clone().into(),
             self.container_name.clone(),
+            &crate::config::ProxyConfig::default(),
         )
         .unwrap();
 
@@ -289,6 +293,7 @@ impl AzureBlobSinkConfig {
         let client = azure_common::config::build_client(
             self.connection_string.clone().into(),
             self.container_name.clone(),
+            &crate::config::ProxyConfig::default(),
         )
         .unwrap();
 
@@ -337,6 +342,7 @@ impl AzureBlobSinkConfig {
         let client = azure_common::config::build_client(
             self.connection_string.clone().into(),
             self.container_name.clone(),
+            &crate::config::ProxyConfig::default(),
         )
         .unwrap();
         let result = client.create_container(None).await;
