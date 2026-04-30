@@ -256,6 +256,105 @@ generated: components: sinks: aws_s3: configuration: {
 			}
 		}
 	}
+	batch_encoding: {
+		description: """
+			Batch encoding configuration for columnar formats.
+
+			When set, events are encoded together as a batch in a columnar format (for example, Parquet)
+			instead of the standard per-event framing-based encoding. The columnar format handles
+			its own internal compression, so the top-level `compression` setting is bypassed.
+
+			Only the `parquet` codec is supported by the AWS S3 sink.
+			"""
+		required: false
+		type: object: options: {
+			allow_nullable_fields: {
+				description: """
+					Allow null values for non-nullable fields in the schema.
+
+					When enabled, missing or incompatible values are encoded as null, even for fields
+					marked as non-nullable in the Arrow schema. This is useful when working with downstream
+					systems that can handle null values through defaults, computed columns, or other mechanisms.
+
+					When disabled (default), missing values for non-nullable fields results in encoding errors. This is to
+					help ensure all required data is present before sending it to the sink.
+					"""
+				relevant_when: "codec = \"arrow_stream\""
+				required:      false
+				type: bool: default: false
+			}
+			codec: {
+				description: "The codec to use for batch encoding events."
+				required:    true
+				type: string: enum: {
+					arrow_stream: """
+						Encodes events in [Apache Arrow][apache_arrow] IPC streaming format.
+
+						This is the streaming variant of the Arrow IPC format, which writes
+						a continuous stream of record batches.
+
+						[apache_arrow]: https://arrow.apache.org/
+						"""
+					parquet: """
+						Encodes events in [Apache Parquet][apache_parquet] columnar format.
+
+						[apache_parquet]: https://parquet.apache.org/
+						"""
+				}
+			}
+			compression: {
+				description:   "Compression codec applied per column page inside the Parquet file."
+				relevant_when: "codec = \"parquet\""
+				required:      false
+				type: object: options: {
+					algorithm: {
+						description: "Compression codec applied per column page inside the Parquet file."
+						required:    false
+						type: string: {
+							default: "snappy"
+							enum: {
+								gzip:   "Gzip compression. Level must be between 1 and 9."
+								lz4:    "LZ4 raw compression"
+								none:   "No compression"
+								snappy: "Snappy compression (no level)."
+								zstd:   "Zstd compression. Level must be between 1 and 21."
+							}
+						}
+					}
+					level: {
+						description:   "Compression level (1–21). This is the range Vector supports; higher values compress more but are slower."
+						relevant_when: "algorithm = \"zstd\" or algorithm = \"gzip\""
+						required:      true
+						type: uint: {}
+					}
+				}
+			}
+			schema_file: {
+				description: """
+					Path to a native Parquet schema file (`.schema`).
+
+					Required unless `schema_mode` is `auto_infer`. The file must contain a valid
+					Parquet message type definition.
+					"""
+				relevant_when: "codec = \"parquet\""
+				required:      false
+				type: string: {}
+			}
+			schema_mode: {
+				description:   "Controls how events with fields not present in the schema are handled."
+				relevant_when: "codec = \"parquet\""
+				required:      false
+				type: string: {
+					default: "relaxed"
+					enum: {
+						auto_infer: "Auto infer schema based on the batch. No schema file needed."
+						relaxed:    "Missing fields become null. Extra fields are silently dropped."
+						strict:     "Missing fields become null. Extra fields cause an error."
+					}
+				}
+			}
+		}
+	}
 	bucket: {
 		description: """
 			The S3 bucket name.
@@ -818,10 +917,24 @@ generated: components: sinks: aws_s3: configuration: {
 		description: """
 			Specifies which addressing style to use.
 
-			This controls if the bucket name is in the hostname or part of the URL.
+			This controls if the bucket name is in the hostname (virtual-hosted-style,
+			`<bucket>.s3.<region>.amazonaws.com`) or part of the URL (path-style,
+			`s3.<region>.amazonaws.com/<bucket>`).
+
+			When unset, the default is `true` (path-style), except when
+			`use_fips_endpoint = true` — in that case the default is `false`
+			(virtual-hosted-style). Per [AWS][aws-fips], **all** S3 FIPS endpoints
+			(commercial *and* GovCloud) require virtual-hosted-style addressing:
+			*"These Endpoints can only be used with Virtual Hosted-Style addressing."*
+
+			If `force_path_style` is explicitly set to `true` together with
+			`use_fips_endpoint = true`, Vector overrides it back to `false` and logs
+			a warning at startup, since AWS does not support that combination.
+
+			[aws-fips]: https://aws.amazon.com/compliance/fips/
 			"""
 		required: false
-		type: bool: default: true
+		type: bool: {}
 	}
 	framing: {
 		description: "Framing configuration."
@@ -1370,5 +1483,19 @@ generated: components: sinks: aws_s3: configuration: {
 				type: bool: {}
 			}
 		}
+	}
+	use_fips_endpoint: {
+		description: """
+			Whether to use [FIPS-compliant endpoints][fips] when communicating with AWS services.
+
+			When enabled, the SDK resolves FIPS-compliant endpoints for the target service.
+			This is required for FedRAMP and other compliance environments. When omitted, the
+			SDK falls back to its default provider chain (the `AWS_USE_FIPS_ENDPOINT` environment
+			variable and AWS config files).
+
+			[fips]: https://docs.aws.amazon.com/sdkref/latest/guide/setting-global-aws_use_fips_endpoint.html
+			"""
+		required: false
+		type: bool: {}
 	}
 }
