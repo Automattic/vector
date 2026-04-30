@@ -492,14 +492,15 @@ mod test {
     }
 
     fn cfg(region: &str, fips: Option<bool>, force_path_style: Option<bool>) -> AwsS3Config {
-        let mut c = AwsS3Config::default();
-        c.region = RegionOrEndpoint {
-            region: Some(region.to_string()),
-            endpoint: None,
-            use_fips_endpoint: fips,
-        };
-        c.force_path_style = force_path_style;
-        c
+        AwsS3Config {
+            region: RegionOrEndpoint {
+                region: Some(region.to_string()),
+                endpoint: None,
+                use_fips_endpoint: fips,
+            },
+            force_path_style,
+            ..AwsS3Config::default()
+        }
     }
 
     #[test]
