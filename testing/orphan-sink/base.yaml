@@ -13,4 +13,4 @@ transforms:
     type: route
     inputs: [demo]
     route:
-      all: 'true'
+      all: "true"
