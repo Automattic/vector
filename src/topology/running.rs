@@ -41,9 +41,9 @@ pub type ShutdownErrorReceiver = mpsc::UnboundedReceiver<ShutdownError>;
 /// detaching it and proceeding with the reload. Without this bound, a sink whose
 /// downstream is permanently failing (e.g. stuck on retriable HTTP 429) would
 /// hold the reload indefinitely and backpressure the source pipeline. On timeout
-/// the old task is detached (it continues retrying in the background) and any
-/// `reuse_buffers` entry for the sink is dropped, so the new sink starts with a
-/// fresh buffer rather than waiting on the old one to release ownership.
+/// the old task is aborted (see `detach_sink_task`) and any `reuse_buffers` entry
+/// for the sink is dropped, so the new sink starts with a fresh buffer rather than
+/// waiting on the old one to release ownership.
 const RELOAD_DRAIN_TIMEOUT: Duration = Duration::from_secs(60);
 
 #[derive(Debug, Snafu)]
@@ -422,6 +422,27 @@ impl RunningTopology {
         }
     }
 
+    /// Let a detached sink task finish on its own for up to `RELOAD_DRAIN_TIMEOUT`, then abort it.
+    /// A removed or replaced sink whose downstream keeps returning retriable errors otherwise
+    /// keeps retrying as an orphan until the process exits.
+    fn detach_sink_task(key: &ComponentKey, mut previous: TaskHandle) {
+        let key = key.clone();
+        tokio::spawn(async move {
+            if tokio::time::timeout(RELOAD_DRAIN_TIMEOUT, &mut previous)
+                .await
+                .is_err()
+            {
+                warn!(
+                    component_id = %key,
+                    timeout_secs = RELOAD_DRAIN_TIMEOUT.as_secs(),
+                    "Detached sink task did not finish draining within reload timeout; aborting it. \
+                     Its in-flight request is dropped; events still in its disk buffer stay on disk."
+                );
+                previous.abort();
+            }
+        });
+    }
+
     /// Shuts down any changed/removed component in the given configuration diff.
     ///
     /// If buffers for any of the changed/removed components can be recovered, they'll be returned.
@@ -704,10 +725,10 @@ impl RunningTopology {
         // If a sink we're removing isn't tying up any resource that a changed/added sink depends
         // on, we don't bother waiting for it to shutdown.
         for key in &removed_sinks {
-            let previous = self.tasks.remove(key).unwrap();
+            let mut previous = self.tasks.remove(key).unwrap();
             if wait_for_sinks.contains(key) {
                 debug!(message = "Waiting for sink to shutdown.", component_id = %key);
-                match tokio::time::timeout(RELOAD_DRAIN_TIMEOUT, previous).await {
+                match tokio::time::timeout(RELOAD_DRAIN_TIMEOUT, &mut previous).await {
                     Ok(res) => {
                         res.unwrap().unwrap();
                     }
@@ -716,22 +737,23 @@ impl RunningTopology {
                             component_id = %key,
                             timeout_secs = RELOAD_DRAIN_TIMEOUT.as_secs(),
                             "Sink did not finish draining within reload timeout; \
-                             detaching the old task and continuing the reload. \
-                             In-flight events on the detached task may be lost."
+                             aborting the old task and continuing the reload. \
+                             In-flight events on the aborted task may be lost."
                         );
+                        previous.abort();
                     }
                 }
             } else {
-                drop(previous); // detach and forget
+                Self::detach_sink_task(key, previous);
             }
         }
 
         let mut buffers = HashMap::<ComponentKey, BuiltBuffer>::new();
         for key in &sinks_to_change {
             if wait_for_sinks.contains(key) {
-                let previous = self.tasks.remove(key).unwrap();
+                let mut previous = self.tasks.remove(key).unwrap();
                 debug!(message = "Waiting for sink to shutdown.", component_id = %key);
-                let buffer = match tokio::time::timeout(RELOAD_DRAIN_TIMEOUT, previous).await {
+                let buffer = match tokio::time::timeout(RELOAD_DRAIN_TIMEOUT, &mut previous).await {
                     Ok(res) => Some(res.unwrap().unwrap()),
                     Err(_) => {
                         warn!(
@@ -739,11 +761,12 @@ impl RunningTopology {
                             timeout_secs = RELOAD_DRAIN_TIMEOUT.as_secs(),
                             reuse_buffers = reuse_buffers.contains(key),
                             "Sink did not finish draining within reload timeout; \
-                             detaching the old task and continuing the reload. \
-                             In-flight events on the detached task may be lost. \
+                             aborting the old task and continuing the reload. \
+                             In-flight events on the aborted task may be lost. \
                              If the sink was a buffer-reuse candidate, the new \
                              sink will start with a fresh buffer instead."
                         );
+                        previous.abort();
                         // Drop the buffer_tx entry so we don't try to reuse it; the
                         // builder falls through to constructing a fresh buffer when
                         // the buffers map has no entry for this key.
@@ -1281,7 +1304,7 @@ impl RunningTopology {
         .instrument(task_span);
         let spawned = spawn_named(task, task_name.as_ref());
         if let Some(previous) = self.tasks.insert(key.clone(), spawned) {
-            drop(previous); // detach and forget
+            Self::detach_sink_task(key, previous);
         }
     }
 

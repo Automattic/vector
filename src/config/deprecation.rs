@@ -188,10 +188,7 @@ mod tests {
     #[test]
     fn error_at_first_post_window_minor() {
         assert_eq!(
-            stage_for(
-                REMOVED_IN,
-                VectorMinor::new(0, 55 + WARN_WINDOW_MINORS + 1)
-            ),
+            stage_for(REMOVED_IN, VectorMinor::new(0, 55 + WARN_WINDOW_MINORS + 1)),
             DeprecationStage::Error
         );
     }

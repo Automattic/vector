@@ -1,0 +1,16 @@
+api:
+  enabled: true
+  address: 0.0.0.0:8686
+
+sources:
+  demo:
+    type: demo_logs
+    format: json
+    interval: 0.1
+
+transforms:
+  router:
+    type: route
+    inputs: [demo]
+    route:
+      all: "true"

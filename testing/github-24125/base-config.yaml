@@ -21,7 +21,7 @@ transforms:
     type: route
     inputs: [demo]
     route:
-      all: 'true'
+      all: "true"
 
 sinks:
   metrics_out:
