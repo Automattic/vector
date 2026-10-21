@@ -97,6 +97,7 @@ cleanup() {
   fi
 }
 
+# shellcheck disable=SC2317,SC2329  # invoked indirectly via the EXIT trap
 on_exit() {
   ON_EXIT=true
   CLEANUP=${EXIT_CLEANUP:=true}
