@@ -33,6 +33,7 @@ DRAIN_TIMEOUT=60          # RELOAD_DRAIN_TIMEOUT in src/topology/running.rs
 GRACE=20                  # extra seconds after the drain timeout before judging
 OBSERVE=40                # observation window after that
 
+# shellcheck disable=SC2317,SC2329  # invoked indirectly via the EXIT trap
 cleanup() {
   docker rm -f "$VECTOR_C" "$GOOD_C" "$BAD_C" >/dev/null 2>&1 || true
   docker network rm "$NETWORK" >/dev/null 2>&1 || true
