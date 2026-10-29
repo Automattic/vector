@@ -44,9 +44,11 @@ impl ExclusiveRoute {
 }
 
 impl SyncTransform for ExclusiveRoute {
-    fn transform(&mut self, event: Event, output: &mut TransformOutputsBuf) {
+    fn transform(&mut self, mut event: Event, output: &mut TransformOutputsBuf) {
+        // Conditions hand the event back unchanged, so no clone is needed per check.
         for route in &self.routes {
-            let (result, event) = route.condition.check(event.clone());
+            let (result, checked) = route.condition.check(event);
+            event = checked;
             if result {
                 output.push(Some(&route.name), event);
                 return;
