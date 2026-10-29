@@ -38,12 +38,15 @@ impl Route {
 }
 
 impl SyncTransform for Route {
-    fn transform(&mut self, event: Event, output: &mut vector_lib::transform::TransformOutputsBuf) {
+    fn transform(&mut self, mut event: Event, output: &mut vector_lib::transform::TransformOutputsBuf) {
         let mut check_failed: usize = 0;
+        // Conditions hand the event back unchanged, so it is only cloned for the
+        // routes it matches, not once per condition evaluated.
         for (output_name, condition) in &self.conditions {
-            let (result, event) = condition.check(event.clone());
+            let (result, checked) = condition.check(event);
+            event = checked;
             if result {
-                output.push(Some(output_name), event);
+                output.push(Some(output_name), event.clone());
             } else {
                 check_failed += 1;
             }
